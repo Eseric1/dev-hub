@@ -69,9 +69,10 @@ if ($Since -gt 0) {
     }
 }
 
-Write-Host "  Filtered to $($filtered.Count) entries" -ForegroundColor Gray
+$filteredCount = @($filtered).Count
+Write-Host "  Filtered to $filteredCount entries" -ForegroundColor Gray
 
-if ($filtered.Count -eq 0) {
+if ($filteredCount -eq 0) {
     Write-Host ""
     Write-Host "  No entries match your filters." -ForegroundColor Yellow
     Write-Host ""
