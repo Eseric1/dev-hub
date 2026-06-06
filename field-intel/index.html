@@ -32,23 +32,19 @@ header{
 .logo{font-size:18px;letter-spacing:.5px;font-weight:300;color:var(--text);}
 .logo em{color:var(--accent);font-style:normal;font-weight:500;}
 .header-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
-.entry-count{
-  font-size:11px;font-family:var(--mono);
-  color:var(--muted);
-}
+.entry-count{font-size:11px;font-family:var(--mono);color:var(--muted);}
 .hub-link{
   font-size:11px;font-family:var(--mono);
   color:var(--muted);text-decoration:none;
   padding:4px 10px;border-radius:6px;
-  border:1px solid var(--border);
-  transition:all .15s;
+  border:1px solid var(--border);transition:all .15s;
 }
 .hub-link:hover{color:var(--cool);border-color:var(--cool);}
 
 /* ── LAYOUT ───────────────────────────────── */
 .workspace{display:flex;flex:1;overflow:hidden;}
 
-/* ── SIDEBAR — categories ─────────────────── */
+/* ── SIDEBAR ──────────────────────────────── */
 #sidebar{
   width:220px;flex-shrink:0;
   background:var(--panel);border-right:1px solid var(--border);
@@ -61,12 +57,20 @@ header{
   border-bottom:1px solid var(--border);
 }
 .sb-cats{flex:1;overflow-y:auto;padding:6px 0;}
+.sb-section{
+  padding:8px 14px 4px;
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);font-weight:400;
+  border-top:1px solid var(--border);
+  margin-top:4px;
+}
+.sb-section:first-child{border-top:none;margin-top:0;}
 
 .cat-row{
   display:flex;align-items:center;gap:8px;
-  padding:8px 14px;cursor:pointer;
+  padding:7px 14px;cursor:pointer;
   font-size:12px;color:var(--muted);
-  transition:all .1s;border-radius:0;
+  transition:all .1s;
 }
 .cat-row:hover{background:var(--surface);color:var(--text);}
 .cat-row.active{
@@ -74,14 +78,28 @@ header{
   background:rgba(251,191,121,.07);
   border-right:2px solid var(--accent);
 }
-.cat-icon{font-size:14px;flex-shrink:0;}
+.cat-icon{font-size:13px;flex-shrink:0;}
 .cat-name{flex:1;}
 .cat-count{
   font-size:10px;font-family:var(--mono);
-  background:var(--surface);
-  border:1px solid var(--border);
+  background:var(--surface);border:1px solid var(--border);
   padding:1px 6px;border-radius:20px;
 }
+
+/* ── SEARCH BAR ───────────────────────────── */
+#search-bar{
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+#ref-search{
+  width:100%;background:var(--surface);
+  border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-family:var(--mono);font-size:11px;
+  padding:6px 10px;outline:none;transition:border-color .2s;
+}
+#ref-search:focus{border-color:var(--accent);}
+#ref-search::placeholder{color:var(--muted);}
 
 /* ── MAIN ─────────────────────────────────── */
 #main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
@@ -90,7 +108,7 @@ header{
 #entry-form{
   background:var(--panel);
   border-bottom:1px solid var(--border);
-  padding:16px 20px;flex-shrink:0;
+  padding:14px 20px;flex-shrink:0;
 }
 .form-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;}
 .form-row:last-child{margin-bottom:0;}
@@ -98,122 +116,121 @@ header{
 .field{display:flex;flex-direction:column;gap:4px;flex:1;}
 .field label{
   font-size:10px;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--muted);font-weight:400;
+  color:var(--muted);font-weight:400;display:flex;align-items:center;gap:6px;
 }
-.field input, .field textarea, .field select{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:8px;
-  color:var(--text);
-  font-family:var(--display);
-  font-size:13px;
-  padding:8px 12px;
-  outline:none;
-  transition:border-color .2s;
-  width:100%;
+.field label .lbl-hint{
+  font-size:9px;color:var(--dim);text-transform:none;
+  letter-spacing:0;font-family:var(--mono);
 }
-.field input:focus,
-.field textarea:focus,
-.field select:focus{border-color:var(--accent);}
-.field input::placeholder,
-.field textarea::placeholder{color:var(--muted);}
-.field textarea{
-  resize:vertical;min-height:72px;
-  font-family:var(--display);line-height:1.6;
+.field input,.field textarea,.field select{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:var(--display);
+  font-size:13px;padding:8px 12px;outline:none;
+  transition:border-color .2s;width:100%;
 }
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted);}
+.field textarea{resize:vertical;min-height:60px;font-family:var(--display);line-height:1.6;}
 .field select option{background:var(--surface);}
+
+/* question field — slightly different accent */
+#f-question:focus{border-color:var(--cool);}
+
+/* reference field — monospace */
+#f-ref{font-family:var(--mono);font-size:12px;}
+#f-ref:focus{border-color:#86efac;}
 
 .save-btn{
   align-self:flex-end;
   padding:9px 22px;
-  background:var(--surface);
-  border:1px solid var(--accent);
-  border-radius:8px;
-  color:var(--accent);
+  background:var(--surface);border:1px solid var(--accent);
+  border-radius:8px;color:var(--accent);
   font-size:13px;font-family:var(--display);font-weight:500;
-  cursor:pointer;
-  transition:all .15s;
-  white-space:nowrap;flex-shrink:0;
+  cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;
 }
 .save-btn:hover{background:rgba(251,191,121,.1);}
 .save-btn:active{transform:scale(.97);}
 
 /* ── LOG FEED ─────────────────────────────── */
 #log-feed{
-  flex:1;overflow-y:auto;
-  padding:16px 20px;
+  flex:1;overflow-y:auto;padding:16px 20px;
   scrollbar-width:thin;scrollbar-color:var(--border) transparent;
 }
-
 .feed-hdr{
-  display:flex;align-items:center;gap:10px;
-  margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
 }
 .feed-hdr h2{
   font-size:10px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--muted);font-weight:400;
 }
 .feed-hdr .line{flex:1;height:1px;background:var(--border);}
-.feed-hdr .count{
-  font-size:10px;font-family:var(--mono);
-  color:var(--muted);
-}
+.feed-hdr .count{font-size:10px;font-family:var(--mono);color:var(--muted);}
 
+/* ── ENTRY CARD ───────────────────────────── */
 .entry-card{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:12px;
-  margin-bottom:10px;
-  overflow:hidden;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:12px;margin-bottom:10px;overflow:hidden;
   transition:border-color .2s;
 }
 .entry-card:hover{border-color:var(--raised);}
 
 .ec-head{
   display:flex;align-items:center;gap:8px;
-  padding:10px 14px;
-  border-bottom:1px solid var(--border);
+  padding:9px 14px;border-bottom:1px solid var(--border);
 }
 .ec-cat{
   font-size:10px;font-family:var(--mono);
-  padding:2px 8px;border-radius:20px;
-  border:1px solid;flex-shrink:0;
+  padding:2px 8px;border-radius:20px;border:1px solid;flex-shrink:0;
 }
 .ec-tool{
   font-size:12px;color:var(--text);font-weight:500;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;
 }
-.ec-date{
-  font-size:10px;font-family:var(--mono);
-  color:var(--muted);flex-shrink:0;
-}
+.ec-date{font-size:10px;font-family:var(--mono);color:var(--muted);flex-shrink:0;}
 .ec-del{
-  background:none;border:none;
-  font-size:12px;color:var(--muted);
-  cursor:pointer;padding:2px 5px;
-  border-radius:4px;opacity:0;
-  transition:opacity .15s,color .15s;
-  flex-shrink:0;
+  background:none;border:none;font-size:12px;color:var(--muted);
+  cursor:pointer;padding:2px 5px;border-radius:4px;
+  opacity:0;transition:opacity .15s,color .15s;flex-shrink:0;
 }
 .entry-card:hover .ec-del{opacity:1;}
 .ec-del:hover{color:var(--danger);}
 
-.ec-body{
-  padding:10px 14px;
-  font-size:12px;color:var(--text);
-  line-height:1.7;
+/* three content sections */
+.ec-section{
+  padding:9px 14px;border-bottom:1px solid var(--border);
+  display:flex;gap:10px;align-items:flex-start;
 }
+.ec-section:last-of-type{border-bottom:none;}
+.ec-section-label{
+  font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);font-family:var(--mono);
+  flex-shrink:0;width:72px;padding-top:2px;
+}
+.ec-section-body{
+  font-size:12px;color:var(--text);line-height:1.7;flex:1;
+}
+.ec-section-body.question{color:var(--cool);}
+.ec-section-body.reference{
+  font-family:var(--mono);font-size:11px;
+  color:#86efac;
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.ref-tag{
+  background:rgba(134,239,172,.08);
+  border:1px solid rgba(134,239,172,.2);
+  padding:2px 8px;border-radius:20px;
+  cursor:pointer;transition:background .15s;
+}
+.ref-tag:hover{background:rgba(134,239,172,.16);}
 
-.ec-tags{
-  padding:6px 14px 10px;
+.ec-footer{
+  padding:6px 14px 8px;
   display:flex;gap:6px;flex-wrap:wrap;
+  border-top:1px solid var(--border);
 }
 .tag{
-  font-size:10px;font-family:var(--mono);
-  color:var(--muted);
-  background:var(--surface);
-  border:1px solid var(--border);
+  font-size:10px;font-family:var(--mono);color:var(--muted);
+  background:var(--surface);border:1px solid var(--border);
   padding:2px 8px;border-radius:20px;
 }
 
@@ -228,10 +245,9 @@ header{
 
 /* empty state */
 .empty-feed{
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  min-height:240px;color:var(--muted);
-  text-align:center;gap:10px;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;min-height:240px;
+  color:var(--muted);text-align:center;gap:10px;
 }
 .empty-feed .big{font-size:36px;opacity:.3;}
 .empty-feed p{font-size:12px;line-height:1.8;}
@@ -261,6 +277,8 @@ header{
   <div class="logo">field<em>://intel</em></div>
   <div class="header-right">
     <span class="entry-count" id="entry-count">0 entries</span>
+    <span id="mode-indicator" style="font-size:11px;font-family:var(--mono);color:var(--muted);" title="Storage mode">○ local</span>
+    <button class="hub-link" onclick="exportJSON()" title="Export for PowerShell pipeline">⬇ export</button>
     <a class="hub-link" href="../hub/index.html">← hub</a>
   </div>
 </header>
@@ -269,17 +287,18 @@ header{
 
   <!-- SIDEBAR -->
   <div id="sidebar">
-    <div class="sb-hdr">Categories</div>
-    <div class="sb-cats" id="cat-list">
-      <!-- populated by JS -->
+    <div class="sb-hdr">Filter</div>
+    <div id="search-bar">
+      <input id="ref-search" type="text" placeholder="Search refs, tools, text…" autocomplete="off">
     </div>
+    <div class="sb-cats" id="cat-list"></div>
   </div>
 
   <!-- MAIN -->
   <div id="main">
-
-    <!-- ENTRY FORM -->
     <div id="entry-form">
+
+      <!-- ROW 1: tool, category, reference -->
       <div class="form-row">
         <div class="field" style="max-width:180px;">
           <label>Tool / Area</label>
@@ -298,17 +317,31 @@ header{
           </select>
         </div>
         <div class="field">
-          <label>Tags (comma separated)</label>
-          <input id="f-tags" type="text" placeholder="e.g. pump, valve, concentration">
+          <label>
+            Reference IDs
+            <span class="lbl-hint">part#, sensor ID, tool ID — comma separated</span>
+          </label>
+          <input id="f-ref" type="text" placeholder="e.g. KCSCS8, FSI-pump-02, relay-4B">
         </div>
       </div>
+
+      <!-- ROW 2: observation + question -->
       <div class="form-row">
         <div class="field">
-          <label>Observation</label>
-          <textarea id="f-obs" placeholder="What did you see? What did it make you wonder? What would you want to know more about?"></textarea>
+          <label>Observation <span class="lbl-hint">what happened</span></label>
+          <textarea id="f-obs" placeholder="What did you see? Be specific — tool state, behavior, context."></textarea>
         </div>
-        <button class="save-btn" onclick="saveEntry()">Save →</button>
+        <div class="field">
+          <label style="color:var(--cool);">Question <span class="lbl-hint">what it made you wonder</span></label>
+          <textarea id="f-question" placeholder="What do you want to understand? What would explain this?"></textarea>
+        </div>
+        <div class="field" style="max-width:160px;">
+          <label>Tags</label>
+          <input id="f-tags" type="text" placeholder="comma separated">
+          <button class="save-btn" style="margin-top:auto;" onclick="saveEntry()">Save →</button>
+        </div>
       </div>
+
     </div>
 
     <!-- LOG FEED -->
@@ -320,7 +353,6 @@ header{
       </div>
       <div id="entries-container"></div>
     </div>
-
   </div>
 </div>
 
@@ -328,12 +360,107 @@ header{
 
 <script>
 // ═══════════════════ STORAGE ═══════════════════
-const STORE_KEY = 'field_intel_v1';
-let entries = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
-let activeCategory = 'all';
+const STORE_KEY = 'field_intel_v2';
+let TOKEN       = '';
+let SERVER_MODE = false;
 
-function save() {
+let entries        = [];
+let activeCategory = 'all';
+let searchQuery    = '';
+
+// Try to reach the server — fall back to localStorage silently
+async function bootstrap() {
+  try {
+    const r    = await fetch('/bootstrap', { signal: AbortSignal.timeout(3000) });
+    const data = await r.json();
+    TOKEN       = data.token || '';
+    SERVER_MODE = true;
+    updateModeIndicator(true);
+    await loadFromServer();
+  } catch {
+    SERVER_MODE = false;
+    updateModeIndicator(false);
+    loadFromLocal();
+  }
+}
+
+function updateModeIndicator(serverOn) {
+  const el = document.getElementById('mode-indicator');
+  if (!el) return;
+  el.textContent    = serverOn ? '● disk' : '○ local';
+  el.style.color    = serverOn ? 'var(--success)' : 'var(--muted)';
+  el.title          = serverOn
+    ? 'Saving to disk via server.py'
+    : 'Server offline — saving to browser localStorage';
+}
+
+async function loadFromServer() {
+  try {
+    const r    = await fetch(`/api/entries?_t=${TOKEN}`);
+    const data = await r.json();
+    entries = data.entries || [];
+    // Sync any local entries not yet on server
+    const localRaw = localStorage.getItem(STORE_KEY);
+    if (localRaw) {
+      const local = JSON.parse(localRaw);
+      for (const e of local) {
+        if (!entries.find(s => s.id === e.id)) {
+          await saveToServer(e);
+          entries.unshift(e);
+        }
+      }
+      localStorage.removeItem(STORE_KEY);
+    }
+  } catch(err) {
+    loadFromLocal();
+  }
+}
+
+function loadFromLocal() {
+  const stored = localStorage.getItem(STORE_KEY);
+  entries = stored ? JSON.parse(stored) : [];
+  // Migrate v1
+  if (!entries.length) {
+    const old = localStorage.getItem('field_intel_v1');
+    if (old) {
+      try {
+        entries = JSON.parse(old).map(e => ({...e, question:'', references:[]}));
+        localStorage.setItem(STORE_KEY, JSON.stringify(entries));
+      } catch {}
+    }
+  }
+}
+
+async function saveToServer(entry) {
+  if (!TOKEN) return;
+  await fetch(`/api/entries?_t=${TOKEN}`, {
+    method:  'POST',
+    headers: {'Content-Type': 'application/json'},
+    body:    JSON.stringify(entry)
+  });
+}
+
+async function deleteFromServer(id) {
+  if (!TOKEN) return;
+  await fetch(`/api/entries/${id}?_t=${TOKEN}`, { method: 'DELETE' });
+}
+
+function saveLocal() {
   localStorage.setItem(STORE_KEY, JSON.stringify(entries));
+}
+
+async function save(entry) {
+  if (SERVER_MODE) {
+    try { await saveToServer(entry); return; } catch {}
+  }
+  saveLocal();
+}
+
+async function remove(id) {
+  if (SERVER_MODE) {
+    try { await deleteFromServer(id); return; } catch {}
+  }
+  saveLocal();
 }
 
 // ═══════════════════ CATEGORIES ═══════════════════
@@ -356,7 +483,7 @@ function countFor(id) {
 function renderSidebar() {
   const list = document.getElementById('cat-list');
   list.innerHTML = CATS.map(c => `
-    <div class="cat-row ${activeCategory === c.id ? 'active' : ''}"
+    <div class="cat-row ${activeCategory === c.id && !searchQuery ? 'active' : ''}"
          onclick="setCategory('${c.id}')">
       <span class="cat-icon">${c.icon}</span>
       <span class="cat-name">${c.label}</span>
@@ -367,37 +494,62 @@ function renderSidebar() {
 
 function setCategory(id) {
   activeCategory = id;
+  searchQuery    = '';
+  document.getElementById('ref-search').value = '';
   renderSidebar();
   renderFeed();
 }
 
-// ═══════════════════ SAVE ENTRY ═══════════════════
-function saveEntry() {
-  const tool = document.getElementById('f-tool').value.trim();
-  const cat  = document.getElementById('f-cat').value;
-  const obs  = document.getElementById('f-obs').value.trim();
-  const tags = document.getElementById('f-tags').value
+// ═══════════════════ SEARCH ═══════════════════
+document.getElementById('ref-search').addEventListener('input', e => {
+  searchQuery = e.target.value.trim().toLowerCase();
+  renderSidebar();
+  renderFeed();
+});
+
+function matchesSearch(e, q) {
+  if (!q) return true;
+  return (
+    e.tool.toLowerCase().includes(q) ||
+    e.observation.toLowerCase().includes(q) ||
+    (e.question||'').toLowerCase().includes(q) ||
+    (e.references||[]).some(r => r.toLowerCase().includes(q)) ||
+    (e.tags||[]).some(t => t.toLowerCase().includes(q))
+  );
+}
+
+// ═══════════════════ SAVE ═══════════════════
+async function saveEntry() {
+  const tool  = document.getElementById('f-tool').value.trim();
+  const cat   = document.getElementById('f-cat').value;
+  const obs   = document.getElementById('f-obs').value.trim();
+  const quest = document.getElementById('f-question').value.trim();
+  const refs  = document.getElementById('f-ref').value
+    .split(',').map(r => r.trim().toUpperCase()).filter(Boolean);
+  const tags  = document.getElementById('f-tags').value
     .split(',').map(t => t.trim()).filter(Boolean);
 
   if (!obs) { toast('Add an observation first'); return; }
 
   const entry = {
-    id:       Date.now(),
-    tool:     tool || 'General',
-    category: cat,
+    id:          Date.now(),
+    tool:        tool || 'General',
+    category:    cat,
     observation: obs,
+    question:    quest,
+    references:  refs,
     tags,
     date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
     time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
   };
 
   entries.unshift(entry);
-  save();
+  await save(entry);
 
   // Clear form
-  document.getElementById('f-tool').value = '';
-  document.getElementById('f-obs').value  = '';
-  document.getElementById('f-tags').value = '';
+  ['f-tool','f-obs','f-question','f-ref','f-tags'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
 
   renderSidebar();
   renderFeed();
@@ -411,12 +563,18 @@ function renderFeed() {
   const label     = document.getElementById('feed-label');
   const countEl   = document.getElementById('feed-count');
 
-  const filtered = activeCategory === 'all'
+  let filtered = activeCategory === 'all'
     ? entries
     : entries.filter(e => e.category === activeCategory);
 
-  const cat = CATS.find(c => c.id === activeCategory);
-  label.textContent = cat ? cat.label : 'All observations';
+  if (searchQuery) {
+    filtered = entries.filter(e => matchesSearch(e, searchQuery));
+    label.textContent = `Search: "${searchQuery}"`;
+  } else {
+    const cat = CATS.find(c => c.id === activeCategory);
+    label.textContent = cat ? cat.label : 'All observations';
+  }
+
   countEl.textContent = filtered.length + ' entr' + (filtered.length === 1 ? 'y' : 'ies');
 
   if (!filtered.length) {
@@ -438,18 +596,49 @@ function renderFeed() {
         <span class="ec-date">${e.date} ${e.time}</span>
         <button class="ec-del" onclick="deleteEntry(${e.id})" title="Delete">✕</button>
       </div>
-      <div class="ec-body">${e.observation}</div>
-      ${e.tags.length ? `
-        <div class="ec-tags">
-          ${e.tags.map(t => `<span class="tag">${t}</span>`).join('')}
-        </div>` : ''}
+
+      <div class="ec-section">
+        <span class="ec-section-label">observed</span>
+        <span class="ec-section-body">${e.observation}</span>
+      </div>
+
+      ${e.question ? `
+      <div class="ec-section">
+        <span class="ec-section-label">question</span>
+        <span class="ec-section-body question">${e.question}</span>
+      </div>` : ''}
+
+      ${e.references && e.references.length ? `
+      <div class="ec-section">
+        <span class="ec-section-label">refs</span>
+        <span class="ec-section-body reference">
+          ${e.references.map(r =>
+            `<span class="ref-tag" onclick="searchRef('${r}')" title="Search this ref">${r}</span>`
+          ).join('')}
+        </span>
+      </div>` : ''}
+
+      ${e.tags && e.tags.length ? `
+      <div class="ec-footer">
+        ${e.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+      </div>` : ''}
     </div>
   `).join('');
 }
 
-function deleteEntry(id) {
+// clicking a ref tag searches for it
+function searchRef(ref) {
+  const input = document.getElementById('ref-search');
+  input.value = ref;
+  searchQuery = ref.toLowerCase();
+  renderSidebar();
+  renderFeed();
+  toast(`Showing all entries for ${ref}`);
+}
+
+async function deleteEntry(id) {
   entries = entries.filter(e => e.id !== id);
-  save();
+  await remove(id);
   renderSidebar();
   renderFeed();
   updateCount();
@@ -461,25 +650,35 @@ function updateCount() {
     entries.length + ' entr' + (entries.length === 1 ? 'y' : 'ies');
 }
 
-// ═══════════════════ TOAST ═══════════════════
-let _tt;
-function toast(msg) {
-  clearTimeout(_tt);
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  _tt = setTimeout(() => el.classList.remove('show'), 1800);
+// ═══════════════════ EXPORT ═══════════════════
+function exportJSON() {
+  if (!entries.length) { toast('Nothing to export yet'); return; }
+  const json = JSON.stringify(entries, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'observations.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  const msg = SERVER_MODE
+    ? 'Also available at field-intel/observations/entries.json'
+    : 'Exported — drop into shared/ and run export-intel.ps1';
+  toast(msg);
 }
 
-// ═══════════════════ KEYBOARD SHORTCUT ═══════════════════
+// ═══════════════════ KEYBOARD ═══════════════════
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') saveEntry();
 });
 
 // ═══════════════════ INIT ═══════════════════
-renderSidebar();
-renderFeed();
-updateCount();
+(async () => {
+  await bootstrap();
+  renderSidebar();
+  renderFeed();
+  updateCount();
+})();
 </script>
 </body>
 </html>

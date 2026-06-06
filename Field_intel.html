@@ -371,7 +371,7 @@ let searchQuery    = '';
 // Try to reach the server — fall back to localStorage silently
 async function bootstrap() {
   try {
-    const r    = await fetch('/bootstrap', { signal: AbortSignal.timeout(800) });
+    const r    = await fetch('/bootstrap', { signal: AbortSignal.timeout(3000) });
     const data = await r.json();
     TOKEN       = data.token || '';
     SERVER_MODE = true;
