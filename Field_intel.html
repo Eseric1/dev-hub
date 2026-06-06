@@ -277,6 +277,8 @@ header{
   <div class="logo">field<em>://intel</em></div>
   <div class="header-right">
     <span class="entry-count" id="entry-count">0 entries</span>
+    <span id="mode-indicator" style="font-size:11px;font-family:var(--mono);color:var(--muted);" title="Storage mode">○ local</span>
+    <button class="hub-link" onclick="exportJSON()" title="Export for PowerShell pipeline">⬇ export</button>
     <a class="hub-link" href="../hub/index.html">← hub</a>
   </div>
 </header>
@@ -359,36 +361,105 @@ header{
 <script>
 // ═══════════════════ STORAGE ═══════════════════
 const STORE_KEY = 'field_intel_v2';
+let TOKEN       = '';
+let SERVER_MODE = false;
 
-// Migrate v1 entries if they exist
-function migrateFromV1() {
-  const old = localStorage.getItem('field_intel_v1');
-  if (!old) return [];
-  try {
-    const v1 = JSON.parse(old);
-    return v1.map(e => ({
-      ...e,
-      question:   '',
-      references: []
-    }));
-  } catch { return []; }
-}
-
-let entries = (() => {
-  const stored = localStorage.getItem(STORE_KEY);
-  if (stored) return JSON.parse(stored);
-  const migrated = migrateFromV1();
-  if (migrated.length) {
-    localStorage.setItem(STORE_KEY, JSON.stringify(migrated));
-    return migrated;
-  }
-  return [];
-})();
-
+let entries        = [];
 let activeCategory = 'all';
 let searchQuery    = '';
 
-function save() { localStorage.setItem(STORE_KEY, JSON.stringify(entries)); }
+// Try to reach the server — fall back to localStorage silently
+async function bootstrap() {
+  try {
+    const r    = await fetch('/bootstrap', { signal: AbortSignal.timeout(800) });
+    const data = await r.json();
+    TOKEN       = data.token || '';
+    SERVER_MODE = true;
+    updateModeIndicator(true);
+    await loadFromServer();
+  } catch {
+    SERVER_MODE = false;
+    updateModeIndicator(false);
+    loadFromLocal();
+  }
+}
+
+function updateModeIndicator(serverOn) {
+  const el = document.getElementById('mode-indicator');
+  if (!el) return;
+  el.textContent    = serverOn ? '● disk' : '○ local';
+  el.style.color    = serverOn ? 'var(--success)' : 'var(--muted)';
+  el.title          = serverOn
+    ? 'Saving to disk via server.py'
+    : 'Server offline — saving to browser localStorage';
+}
+
+async function loadFromServer() {
+  try {
+    const r    = await fetch(`/api/entries?_t=${TOKEN}`);
+    const data = await r.json();
+    entries = data.entries || [];
+    // Sync any local entries not yet on server
+    const localRaw = localStorage.getItem(STORE_KEY);
+    if (localRaw) {
+      const local = JSON.parse(localRaw);
+      for (const e of local) {
+        if (!entries.find(s => s.id === e.id)) {
+          await saveToServer(e);
+          entries.unshift(e);
+        }
+      }
+      localStorage.removeItem(STORE_KEY);
+    }
+  } catch(err) {
+    loadFromLocal();
+  }
+}
+
+function loadFromLocal() {
+  const stored = localStorage.getItem(STORE_KEY);
+  entries = stored ? JSON.parse(stored) : [];
+  // Migrate v1
+  if (!entries.length) {
+    const old = localStorage.getItem('field_intel_v1');
+    if (old) {
+      try {
+        entries = JSON.parse(old).map(e => ({...e, question:'', references:[]}));
+        localStorage.setItem(STORE_KEY, JSON.stringify(entries));
+      } catch {}
+    }
+  }
+}
+
+async function saveToServer(entry) {
+  await fetch(`/api/entries?_t=${TOKEN}`, {
+    method:  'POST',
+    headers: {'Content-Type': 'application/json'},
+    body:    JSON.stringify(entry)
+  });
+}
+
+async function deleteFromServer(id) {
+  await fetch(`/api/entries/${id}?_t=${TOKEN}`, { method: 'DELETE' });
+}
+
+function saveLocal() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(entries));
+}
+
+async function save(entry) {
+  if (SERVER_MODE) {
+    try { await saveToServer(entry); return; } catch {}
+  }
+  saveLocal();
+}
+
+async function remove(id) {
+  if (SERVER_MODE) {
+    try { await deleteFromServer(id); return; } catch {}
+  }
+  saveLocal();
+}
 
 // ═══════════════════ CATEGORIES ═══════════════════
 const CATS = [
@@ -446,7 +517,7 @@ function matchesSearch(e, q) {
 }
 
 // ═══════════════════ SAVE ═══════════════════
-function saveEntry() {
+async function saveEntry() {
   const tool  = document.getElementById('f-tool').value.trim();
   const cat   = document.getElementById('f-cat').value;
   const obs   = document.getElementById('f-obs').value.trim();
@@ -471,7 +542,7 @@ function saveEntry() {
   };
 
   entries.unshift(entry);
-  save();
+  await save(entry);
 
   // Clear form
   ['f-tool','f-obs','f-question','f-ref','f-tags'].forEach(id => {
@@ -563,9 +634,9 @@ function searchRef(ref) {
   toast(`Showing all entries for ${ref}`);
 }
 
-function deleteEntry(id) {
+async function deleteEntry(id) {
   entries = entries.filter(e => e.id !== id);
-  save();
+  await remove(id);
   renderSidebar();
   renderFeed();
   updateCount();
@@ -577,15 +648,35 @@ function updateCount() {
     entries.length + ' entr' + (entries.length === 1 ? 'y' : 'ies');
 }
 
+// ═══════════════════ EXPORT ═══════════════════
+function exportJSON() {
+  if (!entries.length) { toast('Nothing to export yet'); return; }
+  const json = JSON.stringify(entries, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'observations.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  const msg = SERVER_MODE
+    ? 'Also available at field-intel/observations/entries.json'
+    : 'Exported — drop into shared/ and run export-intel.ps1';
+  toast(msg);
+}
+
 // ═══════════════════ KEYBOARD ═══════════════════
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') saveEntry();
 });
 
 // ═══════════════════ INIT ═══════════════════
-renderSidebar();
-renderFeed();
-updateCount();
+(async () => {
+  await bootstrap();
+  renderSidebar();
+  renderFeed();
+  updateCount();
+})();
 </script>
 </body>
 </html>

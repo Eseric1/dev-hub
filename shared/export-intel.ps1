@@ -17,8 +17,16 @@ param(
     [string]$Out      = ""
 )
 
-$SCRIPT_DIR = Split-Path -Parent $MyInvocation.MyCommand.Path
-$JSON_PATH  = Join-Path $SCRIPT_DIR "observations.json"
+$SCRIPT_DIR  = Split-Path -Parent $MyInvocation.MyCommand.Path
+$JSON_PATH   = Join-Path $SCRIPT_DIR "observations.json"
+
+# Also check field-intel/observations/entries.json (server mode)
+if (-not (Test-Path $JSON_PATH) -or (Get-Item $JSON_PATH).Length -eq 0) {
+    $SERVER_PATH = Join-Path (Split-Path $SCRIPT_DIR -Parent) "field-intel\observations\entries.json"
+    if (Test-Path $SERVER_PATH) {
+        $JSON_PATH = $SERVER_PATH
+    }
+}
 
 if (-not (Test-Path $JSON_PATH)) {
     Write-Host ""
