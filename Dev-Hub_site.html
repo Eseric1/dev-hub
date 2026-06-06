@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dev://hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#141417; --panel:#1c1c21; --surface:#242429; --raised:#2c2c33;
+  --border:#35353e; --accent:#c4b5fd; --gold:#fbbf79;
+  --danger:#f87171; --success:#86efac;
+  --text:#e8e6f0; --muted:#6b6880; --dim:#2c2c33;
+  --mono:'DM Mono',monospace; --display:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--display);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── HEADER ───────────────────────────────── */
+header{
+  display:flex;align-items:center;gap:14px;
+  padding:0 28px;height:48px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:10;
+}
+.logo{font-size:18px;letter-spacing:.5px;font-weight:300;color:var(--text);}
+.logo em{color:var(--accent);font-style:normal;font-weight:500;}
+.logo-sub{font-size:11px;color:var(--muted);font-family:var(--mono);}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:16px;}
+.system-status{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;color:var(--muted);font-family:var(--mono);
+}
+.status-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--success);
+  box-shadow:0 0 6px var(--success);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* ── MAIN LAYOUT ──────────────────────────── */
+main{
+  max-width:900px;margin:0 auto;
+  padding:40px 28px 80px;
+}
+
+/* ── HERO ─────────────────────────────────── */
+.hero{margin-bottom:48px;}
+.hero-label{
+  font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted);font-family:var(--mono);margin-bottom:10px;
+}
+.hero-title{
+  font-size:32px;font-weight:300;letter-spacing:-.5px;
+  color:var(--text);line-height:1.1;margin-bottom:8px;
+}
+.hero-title em{color:var(--accent);font-style:normal;}
+.hero-desc{font-size:13px;color:var(--muted);line-height:1.7;max-width:480px;}
+
+/* ── SECTION HEADER ───────────────────────── */
+.section-hdr{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:16px;
+}
+.section-hdr h2{
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;font-family:var(--mono);
+}
+.section-hdr .line{
+  flex:1;height:1px;background:var(--border);
+}
+
+/* ── PROJECT CARDS ────────────────────────── */
+.projects{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:14px;
+  margin-bottom:48px;
+}
+
+.project-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:border-color .2s, box-shadow .2s, transform .15s;
+  cursor:pointer;
+  position:relative;
+}
+.project-card:hover{
+  border-color:var(--card-color, var(--accent));
+  box-shadow:0 4px 24px rgba(0,0,0,.3);
+  transform:translateY(-2px);
+}
+
+.card-top{
+  padding:20px 20px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:12px;
+}
+.card-icon{
+  font-size:24px;flex-shrink:0;
+  width:44px;height:44px;
+  background:var(--surface);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+}
+.card-info{flex:1;min-width:0;}
+.card-name{
+  font-size:15px;font-weight:500;
+  color:var(--text);margin-bottom:3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.card-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+
+.card-status{
+  display:flex;align-items:center;
+  padding:10px 20px;
+  gap:8px;font-size:11px;
+  font-family:var(--mono);
+  color:var(--muted);
+}
+.status-indicator{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--border);flex-shrink:0;
+}
+.status-indicator.running{
+  background:var(--success);
+  box-shadow:0 0 5px var(--success);
+}
+.port-tag{
+  margin-left:auto;
+  font-size:10px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:2px 8px;border-radius:20px;
+  color:var(--muted);
+}
+
+.card-actions{
+  padding:12px 20px;
+  display:flex;gap:8px;
+  border-top:1px solid var(--border);
+}
+.btn{
+  flex:1;
+  padding:8px 14px;
+  border-radius:8px;
+  font-size:12px;font-family:var(--display);
+  font-weight:500;cursor:pointer;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--muted);
+  transition:all .15s;
+  text-align:center;
+}
+.btn:hover{background:var(--raised);color:var(--text);}
+.btn.primary{
+  background:var(--surface);
+  border-color:var(--card-color, var(--accent));
+  color:var(--card-color, var(--accent));
+}
+.btn.primary:hover{
+  background:color-mix(in srgb, var(--card-color, var(--accent)) 12%, transparent);
+}
+
+/* ── POWERSHELL PANEL ─────────────────────── */
+.ps-panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  margin-bottom:48px;
+}
+.ps-header{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 18px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+}
+.ps-label{
+  font-size:11px;font-family:var(--mono);
+  color:var(--accent);letter-spacing:.05em;
+}
+.ps-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:.6;}
+.ps-body{
+  padding:18px;
+  font-family:var(--mono);
+  font-size:12px;
+  line-height:1.8;
+  min-height:80px;
+  color:var(--muted);
+  white-space:pre-wrap;
+  word-break:break-all;
+}
+.ps-body .cmd{color:var(--accent);}
+.ps-body .val{color:var(--gold);}
+.ps-body .ok{color:var(--success);}
+.ps-body .err{color:var(--danger);}
+.ps-body .comment{color:#4a5580;}
+
+.ps-run-btn{
+  margin:0 18px 18px;
+  padding:8px 18px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-size:11px;font-family:var(--mono);
+  color:var(--muted);cursor:pointer;
+  transition:all .15s;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.ps-run-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── FOOTER ───────────────────────────────── */
+footer{
+  padding:0 28px 28px;
+  max-width:900px;margin:0 auto;
+  font-size:11px;color:var(--muted);
+  font-family:var(--mono);
+  display:flex;gap:20px;flex-wrap:wrap;
+}
+footer span{display:flex;align-items:center;gap:5px;}
+
+/* ── TOAST ────────────────────────────────── */
+#toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--panel);border:1px solid var(--border);
+  color:var(--text);font-size:12px;font-family:var(--display);
+  padding:9px 20px;border-radius:100px;
+  opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;
+  z-index:999;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">dev<em>://hub</em></div>
+  <span class="logo-sub">personal project navigator</span>
+  <div class="header-right">
+    <div class="system-status">
+      <div class="status-dot"></div>
+      <span id="running-count">checking…</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="hero">
+    <div class="hero-label">workspace</div>
+    <h1 class="hero-title">Your projects,<br><em>one place.</em></h1>
+    <p class="hero-desc">Each project runs isolated on its own port. Launch, switch, and manage without interference.</p>
+  </div>
+
+  <div class="section-hdr">
+    <h2>Projects</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="projects" id="project-grid">
+    <!-- populated by JS -->
+  </div>
+
+  <div class="section-hdr">
+    <h2>PowerShell utilities</h2>
+    <div class="line"></div>
+  </div>
+
+  <div class="ps-panel">
+    <div class="ps-header">
+      <div class="ps-dot"></div>
+      <span class="ps-label">server-utils.ps1 — system layer</span>
+    </div>
+    <div class="ps-body" id="ps-output"><span class="comment"># PowerShell utility layer status
+# Click below to query project registry</span></div>
+    <button class="ps-run-btn" onclick="runRegistryQuery()">
+      ▶ Query project registry
+    </button>
+  </div>
+
+</main>
+
+<footer>
+  <span>📁 dev://hub v1.0</span>
+  <span id="footer-time"></span>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════ REGISTRY ═══════════════════
+// In production this fetches from hub server
+// For now loads from projects.json directly
+let REGISTRY = [];
+
+async function loadRegistry() {
+  try {
+    const r = await fetch('./projects.json');
+    const data = await r.json();
+    REGISTRY = data.projects || [];
+  } catch(e) {
+    // Fallback static registry if fetch fails
+    REGISTRY = [
+      {
+        name: "file-explorer",
+        displayName: "fs:// explorer",
+        description: "Local file system browser with drag-and-drop upload",
+        status: "stopped",
+        port: null,
+        color: "#c4b5fd",
+        icon: "📁"
+      },
+      {
+        name: "field-intel",
+        displayName: "Field Intel",
+        description: "Personal technical observation logger",
+        status: "stopped",
+        port: null,
+        color: "#fbbf79",
+        icon: "📋"
+      }
+    ];
+  }
+  renderProjects();
+  updateStatusBar();
+}
+
+// ═══════════════════ RENDER ═══════════════════
+function renderProjects() {
+  const grid = document.getElementById('project-grid');
+  grid.innerHTML = REGISTRY.map(p => `
+    <div class="project-card" style="--card-color:${p.color}" onclick="handleCardClick('${p.name}')">
+      <div class="card-top">
+        <div class="card-icon">${p.icon}</div>
+        <div class="card-info">
+          <div class="card-name">${p.displayName}</div>
+          <div class="card-desc">${p.description}</div>
+        </div>
+      </div>
+      <div class="card-status">
+        <div class="status-indicator ${p.status === 'running' ? 'running' : ''}"></div>
+        <span>${p.status === 'running' ? 'running' : 'stopped'}</span>
+        ${p.port ? `<span class="port-tag">:${p.port}</span>` : ''}
+      </div>
+      <div class="card-actions">
+        <button class="btn primary" onclick="event.stopPropagation(); launchProject('${p.name}')">
+          ${p.status === 'running' ? '↗ Open' : '▶ Launch'}
+        </button>
+        <button class="btn" onclick="event.stopPropagation(); showInfo('${p.name}')">
+          info
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateStatusBar() {
+  const running = REGISTRY.filter(p => p.status === 'running').length;
+  document.getElementById('running-count').textContent =
+    running ? `${running} running` : 'all stopped';
+}
+
+// ═══════════════════ ACTIONS ═══════════════════
+function handleCardClick(name) {
+  const p = REGISTRY.find(p => p.name === name);
+  if (p && p.status === 'running' && p.port) {
+    window.open(`http://127.0.0.1:${p.port}/`, '_blank');
+  }
+}
+
+function launchProject(name) {
+  const p = REGISTRY.find(p => p.name === name);
+  if (!p) return;
+  if (p.status === 'running' && p.port) {
+    window.open(`http://127.0.0.1:${p.port}/`, '_blank');
+    return;
+  }
+  toast(`Launch ${p.displayName} via its launch.py — hub v2 will handle this automatically`);
+}
+
+function showInfo(name) {
+  const p = REGISTRY.find(p => p.name === name);
+  if (!p) return;
+  toast(`${p.displayName} — folder: ../${p.name}/`);
+}
+
+// ═══════════════════ PS PANEL ═══════════════════
+function runRegistryQuery() {
+  const out = document.getElementById('ps-output');
+  const lines = [
+    `<span class="comment"># Querying project registry via PowerShell equivalent</span>`,
+    `<span class="cmd">Get-Content</span> <span class="val">"hub/projects.json"</span> | <span class="cmd">ConvertFrom-Json</span>`,
+    ``,
+    ...REGISTRY.map(p =>
+      `<span class="ok">✓</span> <span class="val">${p.name.padEnd(18)}</span>` +
+      `<span class="${p.status === 'running' ? 'ok' : 'err'}">${p.status.padEnd(10)}</span>` +
+      `<span class="comment">${p.port ? ':' + p.port : 'no port'}</span>`
+    ),
+    ``,
+    `<span class="comment"># ${REGISTRY.length} projects registered — server-utils.ps1 loaded</span>`
+  ];
+  out.innerHTML = lines.join('\n');
+}
+
+// ═══════════════════ UTILS ═══════════════════
+let _toastTimer;
+function toast(msg) {
+  clearTimeout(_toastTimer);
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function updateClock() {
+  document.getElementById('footer-time').textContent =
+    '⏱ ' + new Date().toLocaleTimeString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ═══════════════════ INIT ═══════════════════
+loadRegistry();
+</script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>field://intel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#141417; --panel:#1c1c21; --surface:#242429; --raised:#2c2c33;
+  --border:#35353e; --accent:#fbbf79; --cool:#c4b5fd;
+  --danger:#f87171; --success:#86efac;
+  --text:#e8e6f0; --muted:#6b6880; --dim:#2c2c33;
+  --mono:'DM Mono',monospace; --display:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--display);
+  display:flex;flex-direction:column;height:100vh;overflow:hidden;
+}
+
+/* ── HEADER ───────────────────────────────── */
+header{
+  display:flex;align-items:center;gap:14px;
+  padding:0 20px;height:48px;
+  background:var(--panel);border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.logo{font-size:18px;letter-spacing:.5px;font-weight:300;color:var(--text);}
+.logo em{color:var(--accent);font-style:normal;font-weight:500;}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.entry-count{
+  font-size:11px;font-family:var(--mono);
+  color:var(--muted);
+}
+.hub-link{
+  font-size:11px;font-family:var(--mono);
+  color:var(--muted);text-decoration:none;
+  padding:4px 10px;border-radius:6px;
+  border:1px solid var(--border);
+  transition:all .15s;
+}
+.hub-link:hover{color:var(--cool);border-color:var(--cool);}
+
+/* ── LAYOUT ───────────────────────────────── */
+.workspace{display:flex;flex:1;overflow:hidden;}
+
+/* ── SIDEBAR — categories ─────────────────── */
+#sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--panel);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sb-hdr{
+  padding:10px 14px 8px;font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;
+  border-bottom:1px solid var(--border);
+}
+.sb-cats{flex:1;overflow-y:auto;padding:6px 0;}
+
+.cat-row{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;cursor:pointer;
+  font-size:12px;color:var(--muted);
+  transition:all .1s;border-radius:0;
+}
+.cat-row:hover{background:var(--surface);color:var(--text);}
+.cat-row.active{
+  color:var(--accent);
+  background:rgba(251,191,121,.07);
+  border-right:2px solid var(--accent);
+}
+.cat-icon{font-size:14px;flex-shrink:0;}
+.cat-name{flex:1;}
+.cat-count{
+  font-size:10px;font-family:var(--mono);
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:1px 6px;border-radius:20px;
+}
+
+/* ── MAIN ─────────────────────────────────── */
+#main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+
+/* ── ENTRY FORM ───────────────────────────── */
+#entry-form{
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  padding:16px 20px;flex-shrink:0;
+}
+.form-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;}
+.form-row:last-child{margin-bottom:0;}
+
+.field{display:flex;flex-direction:column;gap:4px;flex:1;}
+.field label{
+  font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;
+}
+.field input, .field textarea, .field select{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text);
+  font-family:var(--display);
+  font-size:13px;
+  padding:8px 12px;
+  outline:none;
+  transition:border-color .2s;
+  width:100%;
+}
+.field input:focus,
+.field textarea:focus,
+.field select:focus{border-color:var(--accent);}
+.field input::placeholder,
+.field textarea::placeholder{color:var(--muted);}
+.field textarea{
+  resize:vertical;min-height:72px;
+  font-family:var(--display);line-height:1.6;
+}
+.field select option{background:var(--surface);}
+
+.save-btn{
+  align-self:flex-end;
+  padding:9px 22px;
+  background:var(--surface);
+  border:1px solid var(--accent);
+  border-radius:8px;
+  color:var(--accent);
+  font-size:13px;font-family:var(--display);font-weight:500;
+  cursor:pointer;
+  transition:all .15s;
+  white-space:nowrap;flex-shrink:0;
+}
+.save-btn:hover{background:rgba(251,191,121,.1);}
+.save-btn:active{transform:scale(.97);}
+
+/* ── LOG FEED ─────────────────────────────── */
+#log-feed{
+  flex:1;overflow-y:auto;
+  padding:16px 20px;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+
+.feed-hdr{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:14px;
+}
+.feed-hdr h2{
+  font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);font-weight:400;
+}
+.feed-hdr .line{flex:1;height:1px;background:var(--border);}
+.feed-hdr .count{
+  font-size:10px;font-family:var(--mono);
+  color:var(--muted);
+}
+
+.entry-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-bottom:10px;
+  overflow:hidden;
+  transition:border-color .2s;
+}
+.entry-card:hover{border-color:var(--raised);}
+
+.ec-head{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+}
+.ec-cat{
+  font-size:10px;font-family:var(--mono);
+  padding:2px 8px;border-radius:20px;
+  border:1px solid;flex-shrink:0;
+}
+.ec-tool{
+  font-size:12px;color:var(--text);font-weight:500;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  flex:1;
+}
+.ec-date{
+  font-size:10px;font-family:var(--mono);
+  color:var(--muted);flex-shrink:0;
+}
+.ec-del{
+  background:none;border:none;
+  font-size:12px;color:var(--muted);
+  cursor:pointer;padding:2px 5px;
+  border-radius:4px;opacity:0;
+  transition:opacity .15s,color .15s;
+  flex-shrink:0;
+}
+.entry-card:hover .ec-del{opacity:1;}
+.ec-del:hover{color:var(--danger);}
+
+.ec-body{
+  padding:10px 14px;
+  font-size:12px;color:var(--text);
+  line-height:1.7;
+}
+
+.ec-tags{
+  padding:6px 14px 10px;
+  display:flex;gap:6px;flex-wrap:wrap;
+}
+.tag{
+  font-size:10px;font-family:var(--mono);
+  color:var(--muted);
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:2px 8px;border-radius:20px;
+}
+
+/* category color map */
+.cat-chemical  {color:#7dd3fc;border-color:#7dd3fc;}
+.cat-sensor    {color:#86efac;border-color:#86efac;}
+.cat-mechanical{color:#fbbf79;border-color:#fbbf79;}
+.cat-electrical{color:#c4b5fd;border-color:#c4b5fd;}
+.cat-software  {color:#f9a8d4;border-color:#f9a8d4;}
+.cat-pm        {color:#a3e635;border-color:#a3e635;}
+.cat-other     {color:#6b6880;border-color:#6b6880;}
+
+/* empty state */
+.empty-feed{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  min-height:240px;color:var(--muted);
+  text-align:center;gap:10px;
+}
+.empty-feed .big{font-size:36px;opacity:.3;}
+.empty-feed p{font-size:12px;line-height:1.8;}
+
+/* ── TOAST ────────────────────────────────── */
+#toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--panel);border:1px solid var(--border);
+  color:var(--text);font-size:12px;font-family:var(--display);
+  padding:9px 20px;border-radius:100px;
+  opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;
+  z-index:999;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">field<em>://intel</em></div>
+  <div class="header-right">
+    <span class="entry-count" id="entry-count">0 entries</span>
+    <a class="hub-link" href="../hub/index.html">← hub</a>
+  </div>
+</header>
+
+<div class="workspace">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sb-hdr">Categories</div>
+    <div class="sb-cats" id="cat-list">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- ENTRY FORM -->
+    <div id="entry-form">
+      <div class="form-row">
+        <div class="field" style="max-width:180px;">
+          <label>Tool / Area</label>
+          <input id="f-tool" type="text" placeholder="e.g. FSI Magellan, Wet Bench 3">
+        </div>
+        <div class="field" style="max-width:160px;">
+          <label>Category</label>
+          <select id="f-cat">
+            <option value="chemical">⬤ Chemical delivery</option>
+            <option value="sensor">⬤ Sensor / interlock</option>
+            <option value="mechanical">⬤ Mechanical</option>
+            <option value="electrical">⬤ Electrical</option>
+            <option value="software">⬤ Software / recipe</option>
+            <option value="pm">⬤ PM observation</option>
+            <option value="other">⬤ Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tags (comma separated)</label>
+          <input id="f-tags" type="text" placeholder="e.g. pump, valve, concentration">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Observation</label>
+          <textarea id="f-obs" placeholder="What did you see? What did it make you wonder? What would you want to know more about?"></textarea>
+        </div>
+        <button class="save-btn" onclick="saveEntry()">Save →</button>
+      </div>
+    </div>
+
+    <!-- LOG FEED -->
+    <div id="log-feed">
+      <div class="feed-hdr">
+        <h2 id="feed-label">All observations</h2>
+        <div class="line"></div>
+        <span class="count" id="feed-count"></span>
+      </div>
+      <div id="entries-container"></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════ STORAGE ═══════════════════
+const STORE_KEY = 'field_intel_v1';
+let entries = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+let activeCategory = 'all';
+
+function save() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(entries));
+}
+
+// ═══════════════════ CATEGORIES ═══════════════════
+const CATS = [
+  { id:'all',        label:'All observations', icon:'📋' },
+  { id:'chemical',   label:'Chemical delivery', icon:'🧪' },
+  { id:'sensor',     label:'Sensor / interlock', icon:'📡' },
+  { id:'mechanical', label:'Mechanical',         icon:'⚙️' },
+  { id:'electrical', label:'Electrical',         icon:'⚡' },
+  { id:'software',   label:'Software / recipe',  icon:'💻' },
+  { id:'pm',         label:'PM observation',     icon:'🔧' },
+  { id:'other',      label:'Other',              icon:'📌' },
+];
+
+function countFor(id) {
+  if (id === 'all') return entries.length;
+  return entries.filter(e => e.category === id).length;
+}
+
+function renderSidebar() {
+  const list = document.getElementById('cat-list');
+  list.innerHTML = CATS.map(c => `
+    <div class="cat-row ${activeCategory === c.id ? 'active' : ''}"
+         onclick="setCategory('${c.id}')">
+      <span class="cat-icon">${c.icon}</span>
+      <span class="cat-name">${c.label}</span>
+      <span class="cat-count">${countFor(c.id)}</span>
+    </div>
+  `).join('');
+}
+
+function setCategory(id) {
+  activeCategory = id;
+  renderSidebar();
+  renderFeed();
+}
+
+// ═══════════════════ SAVE ENTRY ═══════════════════
+function saveEntry() {
+  const tool = document.getElementById('f-tool').value.trim();
+  const cat  = document.getElementById('f-cat').value;
+  const obs  = document.getElementById('f-obs').value.trim();
+  const tags = document.getElementById('f-tags').value
+    .split(',').map(t => t.trim()).filter(Boolean);
+
+  if (!obs) { toast('Add an observation first'); return; }
+
+  const entry = {
+    id:       Date.now(),
+    tool:     tool || 'General',
+    category: cat,
+    observation: obs,
+    tags,
+    date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+    time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
+  };
+
+  entries.unshift(entry);
+  save();
+
+  // Clear form
+  document.getElementById('f-tool').value = '';
+  document.getElementById('f-obs').value  = '';
+  document.getElementById('f-tags').value = '';
+
+  renderSidebar();
+  renderFeed();
+  updateCount();
+  toast('Observation saved');
+}
+
+// ═══════════════════ RENDER FEED ═══════════════════
+function renderFeed() {
+  const container = document.getElementById('entries-container');
+  const label     = document.getElementById('feed-label');
+  const countEl   = document.getElementById('feed-count');
+
+  const filtered = activeCategory === 'all'
+    ? entries
+    : entries.filter(e => e.category === activeCategory);
+
+  const cat = CATS.find(c => c.id === activeCategory);
+  label.textContent = cat ? cat.label : 'All observations';
+  countEl.textContent = filtered.length + ' entr' + (filtered.length === 1 ? 'y' : 'ies');
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="empty-feed">
+        <div class="big">📋</div>
+        <p>No observations yet.<br>
+        Add your first one above.<br>
+        <span style="color:var(--accent)">Every detail you notice is signal.</span></p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(e => `
+    <div class="entry-card">
+      <div class="ec-head">
+        <span class="ec-cat cat-${e.category}">${e.category}</span>
+        <span class="ec-tool">${e.tool}</span>
+        <span class="ec-date">${e.date} ${e.time}</span>
+        <button class="ec-del" onclick="deleteEntry(${e.id})" title="Delete">✕</button>
+      </div>
+      <div class="ec-body">${e.observation}</div>
+      ${e.tags.length ? `
+        <div class="ec-tags">
+          ${e.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+        </div>` : ''}
+    </div>
+  `).join('');
+}
+
+function deleteEntry(id) {
+  entries = entries.filter(e => e.id !== id);
+  save();
+  renderSidebar();
+  renderFeed();
+  updateCount();
+  toast('Entry deleted');
+}
+
+function updateCount() {
+  document.getElementById('entry-count').textContent =
+    entries.length + ' entr' + (entries.length === 1 ? 'y' : 'ies');
+}
+
+// ═══════════════════ TOAST ═══════════════════
+let _tt;
+function toast(msg) {
+  clearTimeout(_tt);
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  _tt = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// ═══════════════════ KEYBOARD SHORTCUT ═══════════════════
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') saveEntry();
+});
+
+// ═══════════════════ INIT ═══════════════════
+renderSidebar();
+renderFeed();
+updateCount();
+</script>
+</body>
+</html>
